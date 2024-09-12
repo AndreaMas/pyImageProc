@@ -22,12 +22,12 @@ This is a simple Python application for loading, processing, and saving images u
 ### Install Dependencies
 
 Create a virtual environment (example uses venv) and then install the aforementioned required libraries:
-```
+```bash
 # create virtual environment
 python -m venv myenv
 myenv\Scripts\activate
 
-#install dependencies
+# install dependencies
 pip install PySide6 opencv-python numpy
 ```
 
