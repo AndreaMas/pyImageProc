@@ -1,5 +1,7 @@
 # Simple Python Image Processing App
 
+![image](https://github.com/user-attachments/assets/fc166a42-e036-4fbc-b877-c6a329aea469)
+
 This is a simple Python application for loading, processing, and saving images using PySide6 (Qt for Python) and OpenCV. The app provides a graphical user interface (GUI) to perform basic image processing operations such as converting an image to grayscale and processing images in a folder.
 
 ### Features
