@@ -4,25 +4,31 @@ import cv2
 import numpy as np
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLabel, QMessageBox
 from PySide6.QtGui import QImage, QPixmap
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal, QObject
 
 # Image Processor class for handling image operations
-class ImageProcessor:
+class ImageProcessor(QObject):
+    image_processed = Signal()  # Signal to notify when the image is processed
+
     def __init__(self):
+        super().__init__()
         self.mImg = None  # cv::Mat equivalent in Python is a numpy array
         self.originalImg = None  # Keep a copy of the original image
 
     def load_image(self, file_path):
         self.mImg = cv2.imread(file_path)  # Load image with OpenCV
         self.originalImg = self.mImg.copy()  # Save the original image
+        self.image_processed.emit()
 
     def to_grayscale(self):
         if self.mImg is not None:
             self.mImg = cv2.cvtColor(self.mImg, cv2.COLOR_BGR2GRAY)
+            self.image_processed.emit()
 
     def revert_image(self):
         if self.originalImg is not None:
             self.mImg = self.originalImg.copy()  # Revert to the original image
+            self.image_processed.emit()
 
     def save_image(self, save_path):
         if self.mImg is not None:
@@ -37,12 +43,19 @@ class ImageProcessor:
                     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     save_path = os.path.join(folder_path, f"grayscale_{file_name}")
                     cv2.imwrite(save_path, gray_img)
+        self.image_processed.emit()
+
 
 # MainWindow class inheriting from QMainWindow
 class MainWindow(QMainWindow):
-    def __init__(self, img_processor):
+    load_image_signal = Signal(str)         # Signal to notify the Application to load an image
+    grayscale_signal = Signal()             # Signal to notify the Application to apply grayscale
+    save_image_signal = Signal(str)         # Signal to notify the Application to save an image
+    revert_image_signal = Signal()          # Signal to revert the image
+    process_all_images_signal = Signal()    # Signal to process all images in a folder
+
+    def __init__(self):
         super().__init__()
-        self.img_processor = img_processor
         self.current_image_path = None
         self.initUI()
 
@@ -79,53 +92,78 @@ class MainWindow(QMainWindow):
         self.image_label.setStyleSheet("border: 1px solid black;")
 
     def load_image(self):
-        # Open file dialog to select an image
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(self, "Open Image", "", "Image Files (*.png *.jpg *.bmp)")
         if file_path:
             self.current_image_path = file_path
-            self.img_processor.load_image(file_path)
-            self.display_image()
+            self.load_image_signal.emit(file_path)  # Emit the signal with file_path
 
     def convert_to_grayscale(self):
-        self.img_processor.to_grayscale()
-        self.display_image()
+        self.grayscale_signal.emit()  # Emit the signal to apply grayscale
 
     def save_image(self):
-        if self.img_processor.mImg is not None:
-            file_dialog = QFileDialog()
-            save_path, _ = file_dialog.getSaveFileName(self, "Save Image", "", "PNG Files (*.png);;JPEG Files (*.jpg);;Bitmap Files (*.bmp)")
-            if save_path:
-                self.img_processor.save_image(save_path)
+        file_dialog = QFileDialog()
+        save_path, _ = file_dialog.getSaveFileName(self, "Save Image", "", "PNG Files (*.png);;JPEG Files (*.jpg);;Bitmap Files (*.bmp)")
+        if save_path:
+            self.save_image_signal.emit(save_path)  # Emit the signal to save the image
 
     def revert_image(self):
-        self.img_processor.revert_image()
-        self.display_image()
+        self.revert_image_signal.emit()  # Emit the signal to revert the image
 
     def process_all_images(self):
-        if self.current_image_path:
-            folder_path = os.path.dirname(self.current_image_path)
-            self.img_processor.process_all_images_in_folder(folder_path)
-            QMessageBox.information(self, "Processing Done", "Grayscale processing has been applied to all images in the folder.")
+        self.process_all_images_signal.emit()  # Emit the signal to process all images in folder
 
-    def display_image(self):
-        # Convert the OpenCV image to QImage for display in QLabel
-        if self.img_processor.mImg is not None:
-            image = self.img_processor.mImg
-            if len(image.shape) == 2:  # If grayscale
-                q_img = QImage(image.data, image.shape[1], image.shape[0], image.strides[0], QImage.Format_Grayscale8)
-            else:  # If color image
-                q_img = QImage(image.data, image.shape[1], image.shape[0], image.strides[0], QImage.Format_RGB888)
-                q_img = q_img.rgbSwapped()  # Convert BGR to RGB
-            self.image_label.setPixmap(QPixmap.fromImage(q_img))
+    def display_image(self, q_img):
+        self.image_label.setPixmap(QPixmap.fromImage(q_img))
+
 
 # Application class inheriting from QApplication
 class Application(QApplication):
     def __init__(self, sys_argv):
         super().__init__(sys_argv)
         self.mImageProcessor = ImageProcessor()
-        self.mMainWindow = MainWindow(self.mImageProcessor)
+        self.mMainWindow = MainWindow()
+
+        # Connect signals from MainWindow to slots in Application
+        self.mMainWindow.load_image_signal.connect(self.load_image)
+        self.mMainWindow.grayscale_signal.connect(self.convert_to_grayscale)
+        self.mMainWindow.save_image_signal.connect(self.save_image)
+        self.mMainWindow.revert_image_signal.connect(self.revert_image)
+        self.mMainWindow.process_all_images_signal.connect(self.process_all_images)
+
+        # Connect ImageProcessor's signal to update UI
+        self.mImageProcessor.image_processed.connect(self.update_image_display)
+
         self.mMainWindow.show()
+
+    def load_image(self, file_path):
+        self.mImageProcessor.load_image(file_path)
+
+    def convert_to_grayscale(self):
+        self.mImageProcessor.to_grayscale()
+
+    def save_image(self, save_path):
+        self.mImageProcessor.save_image(save_path)
+
+    def revert_image(self):
+        self.mImageProcessor.revert_image()
+
+    def process_all_images(self):
+        if self.mMainWindow.current_image_path:
+            folder_path = os.path.dirname(self.mMainWindow.current_image_path)
+            self.mImageProcessor.process_all_images_in_folder(folder_path)
+            QMessageBox.information(self.mMainWindow, "Processing Done", "Grayscale processing has been applied to all images in the folder.")
+
+    def update_image_display(self):
+        if self.mImageProcessor.mImg is not None:
+            image = self.mImageProcessor.mImg
+            if len(image.shape) == 2:  # If grayscale
+                q_img = QImage(image.data, image.shape[1], image.shape[0], image.strides[0], QImage.Format_Grayscale8)
+            else:  # If color image
+                q_img = QImage(image.data, image.shape[1], image.shape[0], image.strides[0], QImage.Format_RGB888)
+                q_img = q_img.rgbSwapped()  # Convert BGR to RGB
+            self.mMainWindow.display_image(q_img)
+
 
 if __name__ == "__main__":
     app = Application(sys.argv)
