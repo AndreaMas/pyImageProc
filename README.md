@@ -20,8 +20,10 @@ This is a simple image processing application, developed in Python using OpenCV 
 
 Create a virtual environment (example uses venv) and then install the aforementioned required libraries:
 ```bash
-# create virtual environment
+# create virtual environment named myenv
 python -m venv myenv
+
+# activate virtual environment
 myenv\Scripts\activate # windows
 source myenv/bin/activate # linux/mac
 
