@@ -23,7 +23,7 @@ Create a virtual environment (example uses venv) and then install the aforementi
 # create virtual environment
 python -m venv myenv
 myenv\Scripts\activate # windows
-source venv/bin/activate # linux/mac
+source myenv/bin/activate # linux/mac
 
 # install dependencies
 pip install PySide6 opencv-python numpy
