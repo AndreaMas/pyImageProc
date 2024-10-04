@@ -9,16 +9,15 @@ This is a simple image processing application, developed in Python using OpenCV 
 - Single Image Processing: Load an image, apply a processing-option to it trough the provided buttons, save the result.
 - Batch Processing: Apply the most recently performed processing-option to all the images in a folder.
 
-### Requirements
+### Install Dependencies
 
+To run the code, the following dependencies are required:
 - Python 3.x
 - PySide6
 - OpenCV
 - NumPy
 
-### Install Dependencies
-
-Create a virtual environment (example uses venv) and then install the aforementioned required libraries:
+To install them, suggestion is to first create a virtual environment in this project folder (or where you prefer), then install the dependencies. This can be done trough the following commands (example uses venv):
 ```bash
 # create virtual environment named myenv
 python -m venv myenv
