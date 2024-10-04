@@ -17,7 +17,7 @@ To run the code, the following dependencies are required:
 - OpenCV
 - NumPy
 
-To install them, suggestion is to first create a virtual environment in this project folder (or where you prefer), then install the dependencies. This can be done trough the following commands (example uses venv):
+To install them, suggestion is to first create a virtual environment (in this project folder, or where you prefer really), then install the dependencies. This can be done trough the following commands (example uses venv):
 ```bash
 # create virtual environment named myenv
 cd C:\pathToThisProjectFolder
