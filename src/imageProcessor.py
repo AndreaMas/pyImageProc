@@ -20,6 +20,7 @@ class ImageProcessor(QObject):
     def revert_image(self):
         if self.originalImg is not None:
             self.mImg = self.originalImg.copy()
+            self.last_operations = []
             self.image_processed.emit()
 
     def save_image(self, save_path):
@@ -56,12 +57,15 @@ class ImageProcessor(QObject):
     def to_grayscale(self):
         if self.mImg is not None:
             self.mImg = cv2.cvtColor(self.mImg, cv2.COLOR_BGR2GRAY)
+            
+            self.last_operations.append('grayscale')
             self.image_processed.emit()
-            self.last_operation.append('grayscale')
 
     def equalize_histogram(self):
         if self.mImg is not None and len(self.mImg.shape) == 2:  # Grayscale image
             self.mImg = cv2.equalizeHist(self.mImg)
+            
+            self.last_operations.append('equalize_histogram')
             self.image_processed.emit()
 
     def color_balance(self):
@@ -72,11 +76,15 @@ class ImageProcessor(QObject):
             l = clahe.apply(l)
             lab = cv2.merge((l, a, b))
             self.mImg = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+            
+            self.last_operations.append('color_balance')
             self.image_processed.emit()
 
     def adjust_exposure(self):
         if self.mImg is not None:
             self.mImg = cv2.convertScaleAbs(self.mImg, alpha=1.2, beta=20)
+            
+            self.last_operations.append('adjust_exposure')
             self.image_processed.emit()
 
     def enhance_contrast(self):
@@ -86,6 +94,8 @@ class ImageProcessor(QObject):
             l = cv2.equalizeHist(l)
             lab = cv2.merge((l, a, b))
             self.mImg = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+            
+            self.last_operations.append('enhance_contrast')
             self.image_processed.emit()
 
     def shadow_removal(self):
@@ -98,11 +108,15 @@ class ImageProcessor(QObject):
                 diff_img = 255 - cv2.absdiff(plane, bg_img)
                 result_planes.append(diff_img)
             self.mImg = cv2.merge(result_planes)
+            
+            self.last_operations.append('shadow_removal')
             self.image_processed.emit()
 
     def enhance_details(self):
         if self.mImg is not None:
             self.mImg = cv2.detailEnhance(self.mImg, sigma_s=10, sigma_r=0.15)
+            
+            self.last_operations.append('enhance_details')
             self.image_processed.emit()
 
             

@@ -32,14 +32,16 @@ class MainWindow(QMainWindow):
         self.image_label.setGeometry(50, 50, 700, 300)
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setStyleSheet("border: 1px solid black;")
+        self.image_label.setScaledContents(True)
 
         # Add buttons
         self.load_button = QPushButton('Load Image', self)
         self.save_button = QPushButton('Save Image', self)
-        self.revert_button = QPushButton('Revert Image', self)
+        self.revert_button = QPushButton('Revert changes', self)
         self.process_all_button = QPushButton('Process All Images in Folder', self)
+
         self.grayscale_button = QPushButton('Grayscale Image', self)
-        self.equalize_histogram_button = QPushButton('Equalize Hist. (gray img only)', self)
+        self.equalize_histogram_button = QPushButton('Equalize Histogram', self)
         self.color_balance_button = QPushButton('Color Balance', self)
         self.adjust_exposure_button = QPushButton('Adjust Exposure', self)
         self.enhance_contrast_button = QPushButton('Enhance Contrast', self)
@@ -48,18 +50,27 @@ class MainWindow(QMainWindow):
 
         # Arrange buttons in layout
         button_layout = QVBoxLayout()
+        button_layout.addWidget(QLabel("Load/Revert"))
         button_layout.addWidget(self.load_button)
-        button_layout.addWidget(self.save_button)
         button_layout.addWidget(self.revert_button)
-        button_layout.addWidget(self.process_all_button)
         button_layout.addSpacing(self.load_button.size().height())
+
+        button_layout.addWidget(QLabel("Grayscale"))
         button_layout.addWidget(self.grayscale_button)
         button_layout.addWidget(self.equalize_histogram_button)
+        button_layout.addSpacing(self.load_button.size().height())
+
+        button_layout.addWidget(QLabel("Image Processing"))
         button_layout.addWidget(self.color_balance_button)
         button_layout.addWidget(self.adjust_exposure_button)
         button_layout.addWidget(self.enhance_contrast_button)
         button_layout.addWidget(self.shadow_removal_button)
         button_layout.addWidget(self.details_enhancement_button)
+        button_layout.addSpacing(self.load_button.size().height())
+
+        button_layout.addWidget(QLabel("Save"))
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.process_all_button)
         button_layout.addStretch(1) # stretch to push buttons to the top
 
         # Create central widget

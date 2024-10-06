@@ -41,11 +41,9 @@ class Application(QApplication):
 
     def save_image(self, save_path):
         self.image_processor.save_image(save_path)
-        self.last_operation = 'grayscale'
 
     def revert_image(self):
         self.image_processor.revert_image()
-        self.last_operation = 'grayscale'
 
     def process_all_images(self):
         if self.main_window.current_image_path:
@@ -55,27 +53,21 @@ class Application(QApplication):
     # Slots for new functionality
     def equalize_histogram(self):
         self.image_processor.equalize_histogram()
-        self.last_operation = 'equalize_histogram'  # Update last operation
 
     def color_balance(self):
         self.image_processor.color_balance()
-        self.last_operation = 'color_balance'
 
     def adjust_exposure(self):
         self.image_processor.adjust_exposure()
-        self.last_operation = 'adjust_exposure'
 
     def enhance_contrast(self):
         self.image_processor.enhance_contrast()
-        self.last_operation = 'enhance_contrast'
 
     def remove_shadows(self):
         self.image_processor.shadow_removal()
-        self.last_operation = 'remove_shadows'
 
     def enhance_details(self):
         self.image_processor.enhance_details()
-        self.last_operation = 'enhance_details'
 
     def update_image_display(self):
         if self.image_processor.mImg is not None:
