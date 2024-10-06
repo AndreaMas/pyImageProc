@@ -1,5 +1,6 @@
 import os
 from PySide6.QtWidgets import QMainWindow, QPushButton, QFileDialog, QLabel
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import Qt, Signal
 
@@ -23,60 +24,65 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         # Set up the window
-        self.setWindowTitle('Qt OpenCV Image Processing App')
+        self.setWindowTitle('OpenCV/Qt/Python Image Processing App')
         self.setGeometry(100, 100, 800, 600)
 
-        # Add buttons
-        self.load_button = QPushButton('Load Image', self)
-        self.load_button.setGeometry(50, 500, 150, 40)
-        self.load_button.clicked.connect(self.load_image)
-
-        self.grayscale_button = QPushButton('Grayscale Image', self)
-        self.grayscale_button.setGeometry(250, 500, 150, 40)
-        self.grayscale_button.clicked.connect(self.convert_to_grayscale)
-
-        self.save_button = QPushButton('Save Image', self)
-        self.save_button.setGeometry(450, 500, 150, 40)
-        self.save_button.clicked.connect(self.save_image)
-
-        self.revert_button = QPushButton('Revert Image', self)
-        self.revert_button.setGeometry(650, 500, 150, 40)
-        self.revert_button.clicked.connect(self.revert_image)
-
-        self.process_all_button = QPushButton('Process All Images in Folder', self)
-        self.process_all_button.setGeometry(50, 550, 300, 40)
-        self.process_all_button.clicked.connect(self.process_all_images)
-
-        # New buttons for the additional functionality
-        self.histogram_button = QPushButton('Equalize Histogram', self)
-        self.histogram_button.setGeometry(50, 450, 150, 40)
-        self.histogram_button.clicked.connect(self.equalize_histogram)
-
-        self.color_balance_button = QPushButton('Color Balance', self)
-        self.color_balance_button.setGeometry(250, 450, 150, 40)
-        self.color_balance_button.clicked.connect(self.color_balance)
-
-        self.exposure_button = QPushButton('Adjust Exposure', self)
-        self.exposure_button.setGeometry(450, 450, 150, 40)
-        self.exposure_button.clicked.connect(self.adjust_exposure)
-
-        self.contrast_button = QPushButton('Enhance Contrast', self)
-        self.contrast_button.setGeometry(650, 450, 150, 40)
-        self.contrast_button.clicked.connect(self.enhance_contrast)
-
-        self.shadow_button = QPushButton('Remove Shadows', self)
-        self.shadow_button.setGeometry(50, 400, 150, 40)
-        self.shadow_button.clicked.connect(self.remove_shadows)
-
-        self.details_button = QPushButton('Enhance Details', self)
-        self.details_button.setGeometry(250, 400, 150, 40)
-        self.details_button.clicked.connect(self.enhance_details)
-
-        # QLabel to display the image
+        # QLabel to display image
         self.image_label = QLabel(self)
         self.image_label.setGeometry(50, 50, 700, 300)
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setStyleSheet("border: 1px solid black;")
+
+        # Add buttons
+        self.load_button = QPushButton('Load Image', self)
+        self.save_button = QPushButton('Save Image', self)
+        self.revert_button = QPushButton('Revert Image', self)
+        self.process_all_button = QPushButton('Process All Images in Folder', self)
+        self.grayscale_button = QPushButton('Grayscale Image', self)
+        self.equalize_histogram_button = QPushButton('Equalize Hist. (gray img only)', self)
+        self.color_balance_button = QPushButton('Color Balance', self)
+        self.adjust_exposure_button = QPushButton('Adjust Exposure', self)
+        self.enhance_contrast_button = QPushButton('Enhance Contrast', self)
+        self.shadow_removal_button = QPushButton('Remove Shadows', self)
+        self.details_enhancement_button = QPushButton('Enhance Details', self)
+
+        # Arrange buttons in layout
+        button_layout = QVBoxLayout()
+        button_layout.addWidget(self.load_button)
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.revert_button)
+        button_layout.addWidget(self.process_all_button)
+        button_layout.addSpacing(self.load_button.size().height())
+        button_layout.addWidget(self.grayscale_button)
+        button_layout.addWidget(self.equalize_histogram_button)
+        button_layout.addWidget(self.color_balance_button)
+        button_layout.addWidget(self.adjust_exposure_button)
+        button_layout.addWidget(self.enhance_contrast_button)
+        button_layout.addWidget(self.shadow_removal_button)
+        button_layout.addWidget(self.details_enhancement_button)
+        button_layout.addStretch(1) # stretch to push buttons to the top
+
+        # Create central widget
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        # Arrange image & buttons in central widget
+        main_layout = QHBoxLayout(central_widget) # main layout for the window: image on the left, buttons on the right
+        main_layout.addWidget(self.image_label)
+        main_layout.addLayout(button_layout)
+
+        # Connect button signals to methods
+        self.load_button.clicked.connect(self.load_image)
+        self.grayscale_button.clicked.connect(self.convert_to_grayscale)
+        self.save_button.clicked.connect(self.save_image)
+        self.revert_button.clicked.connect(self.revert_image)
+        self.process_all_button.clicked.connect(self.process_all_images)
+        self.equalize_histogram_button.clicked.connect(self.equalize_histogram)
+        self.color_balance_button.clicked.connect(self.color_balance)
+        self.adjust_exposure_button.clicked.connect(self.adjust_exposure)
+        self.enhance_contrast_button.clicked.connect(self.enhance_contrast)
+        self.shadow_removal_button.clicked.connect(self.remove_shadows)
+        self.details_enhancement_button.clicked.connect(self.enhance_details)
 
     def load_image(self):
         file_dialog = QFileDialog()

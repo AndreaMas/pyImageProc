@@ -5,6 +5,7 @@ from PySide6.QtCore import QObject, Signal
 
 class ImageProcessor(QObject):
     image_processed = Signal()
+    last_operations = []  # To keep track of the operation performed
 
     def __init__(self):
         super().__init__()
@@ -16,11 +17,6 @@ class ImageProcessor(QObject):
         self.originalImg = self.mImg.copy()
         self.image_processed.emit()
 
-    def to_grayscale(self):
-        if self.mImg is not None:
-            self.mImg = cv2.cvtColor(self.mImg, cv2.COLOR_BGR2GRAY)
-            self.image_processed.emit()
-
     def revert_image(self):
         if self.originalImg is not None:
             self.mImg = self.originalImg.copy()
@@ -29,16 +25,39 @@ class ImageProcessor(QObject):
     def save_image(self, save_path):
         if self.mImg is not None:
             cv2.imwrite(save_path, self.mImg)
-
-    def process_all_images_in_folder(self, folder_path):
+                    
+    def process_all_images_in_folder(self, folder_path, last_operation):
         for file_name in os.listdir(folder_path):
             if file_name.endswith(('.png', '.jpg', '.bmp')):
                 file_path = os.path.join(folder_path, file_name)
                 img = cv2.imread(file_path)
                 if img is not None:
-                    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                    save_path = os.path.join(folder_path, f"grayscale_{file_name}")
-                    cv2.imwrite(save_path, gray_img)
+                    self.mImg = img  # Set the current image
+                    # Performed operations applied sequentially on the image
+                    for operation in self.last_operations:
+                        if operation == 'grayscale':
+                            self.to_grayscale()
+                        elif operation == 'equalize_histogram':
+                            self.equalize_histogram()
+                        elif operation == 'color_balance':
+                            self.color_balance()
+                        elif operation == 'adjust_exposure':
+                            self.adjust_exposure()
+                        elif operation == 'enhance_contrast':
+                            self.enhance_contrast()
+                        elif operation == 'remove_shadows':
+                            self.shadow_removal()
+                        elif operation == 'enhance_details':
+                            self.enhance_details()
+
+                    save_path = os.path.join(folder_path, f"{last_operation}_{file_name}")
+                    cv2.imwrite(save_path, self.mImg)  # Save the processed image
+
+    def to_grayscale(self):
+        if self.mImg is not None:
+            self.mImg = cv2.cvtColor(self.mImg, cv2.COLOR_BGR2GRAY)
+            self.image_processed.emit()
+            self.last_operation.append('grayscale')
 
     def equalize_histogram(self):
         if self.mImg is not None and len(self.mImg.shape) == 2:  # Grayscale image

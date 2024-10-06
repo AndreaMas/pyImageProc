@@ -1,11 +1,16 @@
 import os
+from PySide6.QtWidgets import QApplication
 from mainWindow import MainWindow  # Assuming you have signals in MainWindow
 from imageProcessor import ImageProcessor  # Assuming imageProcessor.py contains the ImageProcessor class
 
-class Application:
-    def __init__(self, main_window: MainWindow, image_processor: ImageProcessor):
-        self.main_window = main_window
-        self.image_processor = image_processor
+class Application(QApplication):
+    def __init__(self, sys_argv):
+        # call QApplication's constructor
+        super().__init__(sys_argv)
+        
+        # Instantiate MainWindow and ImageProcessor
+        self.main_window = MainWindow()
+        self.image_processor = ImageProcessor()
 
         # Connect signals from MainWindow to ImageProcessor
         self.main_window.load_image_signal.connect(self.load_image)
@@ -25,6 +30,9 @@ class Application:
         # Connect ImageProcessor's signal to update the UI in MainWindow
         self.image_processor.image_processed.connect(self.update_image_display)
 
+        # Display the MainWindow
+        self.main_window.show()
+
     def load_image(self, file_path):
         self.image_processor.load_image(file_path)
 
@@ -33,9 +41,11 @@ class Application:
 
     def save_image(self, save_path):
         self.image_processor.save_image(save_path)
+        self.last_operation = 'grayscale'
 
     def revert_image(self):
         self.image_processor.revert_image()
+        self.last_operation = 'grayscale'
 
     def process_all_images(self):
         if self.main_window.current_image_path:
@@ -45,21 +55,27 @@ class Application:
     # Slots for new functionality
     def equalize_histogram(self):
         self.image_processor.equalize_histogram()
+        self.last_operation = 'equalize_histogram'  # Update last operation
 
     def color_balance(self):
         self.image_processor.color_balance()
+        self.last_operation = 'color_balance'
 
     def adjust_exposure(self):
         self.image_processor.adjust_exposure()
+        self.last_operation = 'adjust_exposure'
 
     def enhance_contrast(self):
         self.image_processor.enhance_contrast()
+        self.last_operation = 'enhance_contrast'
 
     def remove_shadows(self):
         self.image_processor.shadow_removal()
+        self.last_operation = 'remove_shadows'
 
     def enhance_details(self):
         self.image_processor.enhance_details()
+        self.last_operation = 'enhance_details'
 
     def update_image_display(self):
         if self.image_processor.mImg is not None:
