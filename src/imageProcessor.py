@@ -27,7 +27,8 @@ class ImageProcessor(QObject):
         if self.mImg is not None:
             cv2.imwrite(save_path, self.mImg)
                     
-    def process_all_images_in_folder(self, folder_path, last_operation):
+    def process_all_images_in_folder(self, folder_path):
+        performed_last_operations = self.last_operations.copy()
         for file_name in os.listdir(folder_path):
             if file_name.endswith(('.png', '.jpg', '.bmp')):
                 file_path = os.path.join(folder_path, file_name)
@@ -35,7 +36,7 @@ class ImageProcessor(QObject):
                 if img is not None:
                     self.mImg = img  # Set the current image
                     # Performed operations applied sequentially on the image
-                    for operation in self.last_operations:
+                    for operation in performed_last_operations:
                         if operation == 'grayscale':
                             self.to_grayscale()
                         elif operation == 'equalize_histogram':
@@ -51,8 +52,10 @@ class ImageProcessor(QObject):
                         elif operation == 'enhance_details':
                             self.enhance_details()
 
-                    save_path = os.path.join(folder_path, f"{last_operation}_{file_name}")
+                    save_path = os.path.join(folder_path, f"processed_{file_name}")
                     cv2.imwrite(save_path, self.mImg)  # Save the processed image
+        performed_last_operations = []
+        self.last_operations = []
 
     def to_grayscale(self):
         if self.mImg is not None:
@@ -82,13 +85,16 @@ class ImageProcessor(QObject):
 
     def adjust_exposure(self):
         if self.mImg is not None:
-            self.mImg = cv2.convertScaleAbs(self.mImg, alpha=1.2, beta=20)
+            # Multiply pixel values by 1.2, then add 20 (brightness increase)
+            # TODO: get alpha and beta values from UI (will also need to be stored in last_operations ... make it a tuple?)
+            self.mImg = cv2.convertScaleAbs(self.mImg, alpha=1.2, beta=20) 
             
             self.last_operations.append('adjust_exposure')
             self.image_processed.emit()
 
     def enhance_contrast(self):
         if self.mImg is not None:
+            # Divide image into brightness (l) and color bands (a, b), equalize just brightness, merge everything back together
             lab = cv2.cvtColor(self.mImg, cv2.COLOR_BGR2LAB)
             l, a, b = cv2.split(lab)
             l = cv2.equalizeHist(l)
