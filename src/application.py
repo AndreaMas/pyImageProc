@@ -14,12 +14,10 @@ class Application(QApplication):
 
         # Connect signals from MainWindow to ImageProcessor
         self.main_window.load_image_signal.connect(self.load_image)
-        self.main_window.grayscale_signal.connect(self.convert_to_grayscale)
         self.main_window.save_image_signal.connect(self.save_image)
         self.main_window.revert_image_signal.connect(self.revert_image)
         self.main_window.process_all_images_signal.connect(self.process_all_images)
-
-        # Connect signals for the new functionality
+        self.main_window.grayscale_signal.connect(self.convert_to_grayscale)
         self.main_window.equalize_histogram_signal.connect(self.equalize_histogram)
         self.main_window.color_balance_signal.connect(self.color_balance)
         self.main_window.adjust_exposure_signal.connect(self.adjust_exposure)
