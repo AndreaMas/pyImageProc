@@ -12,7 +12,6 @@ This is a simple image processing application, developed in Python using OpenCV 
 ### Install Dependencies
 
 To run the code, the following dependencies are required:
-- Python 3.x
 - PySide6
 - OpenCV
 
