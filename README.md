@@ -15,7 +15,6 @@ To run the code, the following dependencies are required:
 - Python 3.x
 - PySide6
 - OpenCV
-- NumPy
 
 To install them, suggestion is to first create a virtual environment (in this project folder, or where you prefer really), then install the dependencies. This can be done trough the following commands (example uses venv):
 ```bash
@@ -28,7 +27,7 @@ myenv\Scripts\activate # windows
 source myenv/bin/activate # linux/mac
 
 # install dependencies
-pip install PySide6 opencv-python numpy
+pip install PySide6 opencv-python
 ```
 
 ### Licence
