@@ -1,6 +1,6 @@
 # Simple Python Image Processing App
 
-![image](https://github.com/user-attachments/assets/fc166a42-e036-4fbc-b877-c6a329aea469)
+![image](https://github.com/user-attachments/assets/3247e741-c4bd-4141-a6b3-3da0a285a875)
 
 This is a simple image processing application, developed in Python using OpenCV and PySide6 (Qt for Python).
 
