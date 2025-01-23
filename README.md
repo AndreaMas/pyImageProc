@@ -27,6 +27,10 @@ source myenv/bin/activate # linux/mac
 
 # install dependencies
 pip install PySide6 opencv-python
+
+# run the app
+python src/main.py
+
 ```
 
 ### Licence
