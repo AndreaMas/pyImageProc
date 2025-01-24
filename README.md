@@ -35,4 +35,4 @@ python src/main.py
 
 ### Licence
 
-The code here provided falls under the very permissive MIT licence. However, if you plan to use this code in a commercial manner, remember that the PySide library (to be installed separately) falls under the Lesser GNU General Public Licence (LGPL, so still free and commerciable but with some limitations, inform yourself accordingly).
+The code here provided falls under the very permissive MIT licence. However, if you plan to use this code in a commercial manner, remember that the PySide library falls under the Lesser GNU General Public Licence (LGPL, so still free and commerciable but with some limitations, inform yourself accordingly).
